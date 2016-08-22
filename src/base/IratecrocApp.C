@@ -1,0 +1,55 @@
+#include "IratecrocApp.h"
+#include "Moose.h"
+#include "AppFactory.h"
+#include "ModulesApp.h"
+#include "MooseSyntax.h"
+
+template<>
+InputParameters validParams<IratecrocApp>()
+{
+  InputParameters params = validParams<MooseApp>();
+
+  params.set<bool>("use_legacy_uo_initialization") = false;
+  params.set<bool>("use_legacy_uo_aux_computation") = false;
+  params.set<bool>("use_legacy_output_syntax") = false;
+
+  return params;
+}
+
+IratecrocApp::IratecrocApp(InputParameters parameters) :
+    MooseApp(parameters)
+{
+  Moose::registerObjects(_factory);
+  ModulesApp::registerObjects(_factory);
+  IratecrocApp::registerObjects(_factory);
+
+  Moose::associateSyntax(_syntax, _action_factory);
+  ModulesApp::associateSyntax(_syntax, _action_factory);
+  IratecrocApp::associateSyntax(_syntax, _action_factory);
+}
+
+IratecrocApp::~IratecrocApp()
+{
+}
+
+// External entry point for dynamic application loading
+extern "C" void IratecrocApp__registerApps() { IratecrocApp::registerApps(); }
+void
+IratecrocApp::registerApps()
+{
+  registerApp(IratecrocApp);
+}
+
+// External entry point for dynamic object registration
+extern "C" void IratecrocApp__registerObjects(Factory & factory) { IratecrocApp::registerObjects(factory); }
+void
+IratecrocApp::registerObjects(Factory & factory)
+{
+}
+
+// External entry point for dynamic syntax association
+extern "C" void IratecrocApp__associateSyntax(Syntax & syntax, ActionFactory & action_factory) { IratecrocApp::associateSyntax(syntax, action_factory); }
+void
+IratecrocApp::associateSyntax(Syntax & /*syntax*/, ActionFactory & /*action_factory*/)
+{
+}
